@@ -14,7 +14,8 @@ scene.add( light );
 
 const start_position = 3;
 const end_position = -start_position;
-
+const text = document.querySelector('.text');
+const TIME_LIMIT = 10;
 
 
 function createCube(size, positionX, rotY = 0, color = 0xfbc851) {
@@ -31,6 +32,9 @@ camera.position.z = 5;
 
 const loader = new THREE.GLTFLoader();
 
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 class Doll {
     constructor() {
@@ -47,6 +51,13 @@ class Doll {
     }
     lookForward() {
         gsap.to(this.doll.rotation, {y: 0, duration: .45});
+    }
+    async start() {
+        this.lookBackward();
+        await delay((Math.random() * 1000) + 1000);
+        this.lookForward();
+        await delay((Math.random() * 750) + 750);
+        this.start();
     }
 }
 
@@ -77,7 +88,8 @@ class Player {
     }
 
     stop() {
-        this.playerInfo.velocity = 0;
+        // this.playerInfo.velocity = 0;
+        gsap.to(this.playerInfo, {velocity: 0, duration: .1});
     }
 
     update() {
@@ -89,10 +101,27 @@ class Player {
 const player = new Player();
 
 let doll = new Doll();
-setTimeout(() => {
-    doll.lookBackward();
+
+async function init() {
+    await delay(500);
+    text.innerText = "Starting in 3";
+    await delay(500);
+    text.innerText = "Starting in 2";
+    await delay(500);
+    text.innerText = "Starting in 1";
+    await delay(500);
+    text.innerText = "Go!!!";
+    startGame();
 }
-, 1000);
+
+function startGame() {
+    let progressBar = createCube({w: 5, h: .1, d: 1}, 0 );
+    progressBar.position.y = 3.35;
+    gsap.to(progressBar.scale, {x: 0, duration: TIME_LIMIT});
+    doll.start();
+}
+
+init();
 
 function animate() {
     renderer.render( scene, camera );
