@@ -24,6 +24,7 @@ function createCube(size, positionX, rotY = 0, color = 0xfbc851) {
     cube.position.x = positionX;
     cube.rotation.y = rotY;
     scene.add( cube );
+    return cube;
 }
 
 camera.position.z = 5;
@@ -50,12 +51,25 @@ class Doll {
 }
 
 function createTrack() {
+    createCube({w: start_position * 2 + .2, h: 1.5, d: 1}, 0, 0, 0xe5a716).position.z = -1;
     createCube({w: .2, h: 1.5, d: 1}, start_position, -.35);
     createCube({w: .2, h: 1.5, d: 1}, end_position, 35);
-    createCube({w: start_position * 2, h: 1.5, d: 1}, 0, 0);
 }
 
 createTrack();
+
+class Player {
+    constructor() {
+        const geometry = new THREE.SphereGeometry( 0.3, 32, 16 );
+        const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+        const sphere = new THREE.Mesh( geometry, material );
+        sphere.position.z = 1;
+        sphere.position.x = start_position;
+        scene.add( sphere );
+    }
+}
+
+const player = new Player();
 
 let doll = new Doll();
 setTimeout(() => {
