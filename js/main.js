@@ -30,7 +30,8 @@ class Doll {
         });
     }
     lookBackward() {
-        this.doll.rotation.y = Math.PI;
+        // this.doll.rotation.y = Math.PI;
+        gsap.to(this.doll.rotation, {y: Math.PI, duration: .45});
     }
     lookForward() {
         this.doll.rotation.y = 0;
