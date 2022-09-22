@@ -16,6 +16,8 @@ const start_position = 3;
 const end_position = -start_position;
 const text = document.querySelector('.text');
 const TIME_LIMIT = 10;
+let gameStat = "loading";
+let isLookingBackward = true;
 
 
 function createCube(size, positionX, rotY = 0, color = 0xfbc851) {
@@ -40,17 +42,22 @@ class Doll {
     constructor() {
         loader.load("../models/scene.gltf", (gltf) => {
             scene.add(gltf.scene);
-            gltf.scene.scale.set(0.4, 0.4, 0.4);
+            gltf.scene.scale.set(0.35, 0.35, 0.35);
             gltf.scene.position.set(0, -1, 0);
             this.doll = gltf.scene;
         });
     }
     lookBackward() {
-        // this.doll.rotation.y = Math.PI;
         gsap.to(this.doll.rotation, {y: Math.PI, duration: .45});
+        setTimeout(() => {
+            isLookingBackward = true;
+        }, 150);
     }
     lookForward() {
         gsap.to(this.doll.rotation, {y: 0, duration: .45});
+        setTimeout(() => {
+            isLookingBackward = false;
+        }, 450);
     }
     async start() {
         this.lookBackward();
@@ -71,7 +78,7 @@ createTrack();
 
 class Player {
     constructor() {
-        const geometry = new THREE.SphereGeometry( 0.3, 32, 16 );
+        const geometry = new THREE.SphereGeometry( 0.4, 32, 16 );
         const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
         const sphere = new THREE.Mesh( geometry, material );
         sphere.position.z = 1;
@@ -92,7 +99,21 @@ class Player {
         gsap.to(this.playerInfo, {velocity: 0, duration: .1});
     }
 
+    check() {
+        if(this.playerInfo.velocity > 0 && !isLookingBackward) {
+            console.log('You lose');
+            text.innerText = 'You lose';
+            gameStat = "over";
+        }
+        if (this.playerInfo.positionX <= end_position + .4) {
+            console.log('You win');
+            text.innerText = 'You win';
+            gameStat = "over";
+        }
+    }
+
     update() {
+        this.check();
         this.playerInfo.positionX -= this.playerInfo.velocity;
         this.player.position.x = this.playerInfo.positionX;
     }
@@ -115,15 +136,25 @@ async function init() {
 }
 
 function startGame() {
+    gameStat = "started";
     let progressBar = createCube({w: 5, h: .1, d: 1}, 0 );
     progressBar.position.y = 3.35;
-    gsap.to(progressBar.scale, {x: 0, duration: TIME_LIMIT});
+    gsap.to(progressBar.scale, {x: 0, duration: TIME_LIMIT, ease: "none"});
+    setTimeout(() => {
+        if(gameStat !== "over") {
+            text.innerText = 'You ran out of time';
+            gameStat = "over";
+        }
+    }, TIME_LIMIT * 1000);
     doll.start();
 }
 
 init();
 
 function animate() {
+    if(gameStat === "over") {
+        return;
+    }
     renderer.render( scene, camera );
     requestAnimationFrame( animate );
     player.update();
@@ -139,6 +170,10 @@ function onWindowResize() {
 }
 
 window.addEventListener('keydown', (e) => {
+    if (gameStat !== "started") {
+        return;
+    }
+
     if (e.key === 'ArrowLeft') {
         player.run();
     }
