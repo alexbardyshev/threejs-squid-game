@@ -76,6 +76,10 @@ class Player {
         this.playerInfo.velocity = 0.03;
     }
 
+    stop() {
+        this.playerInfo.velocity = 0;
+    }
+
     update() {
         this.playerInfo.positionX -= this.playerInfo.velocity;
         this.player.position.x = this.playerInfo.positionX;
@@ -108,5 +112,11 @@ function onWindowResize() {
 window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') {
         player.run();
+    }
+});
+
+window.addEventListener('keyup', (e) => {
+    if (e.key === 'ArrowLeft') {
+        player.stop();
     }
 });
