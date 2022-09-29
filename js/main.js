@@ -43,7 +43,7 @@ function delay(ms) {
 
 class Doll {
     constructor() {
-        loader.load("models/scene.gltf", (gltf) => {
+        loader.load("model/scene.gltf", (gltf) => {
             scene.add(gltf.scene);
             gltf.scene.scale.set(0.35, 0.35, 0.35);
             gltf.scene.position.set(0, -1, 0);

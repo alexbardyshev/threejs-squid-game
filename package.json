@@ -1,5 +1,5 @@
 {
-  "homepage": "http://alexbardyshev.github.com/threejs-squid-game-",
+  "homepage": "http://alexbardyshev.github.io/threejs-squid-game-",
   "dependencies": {
     "github-pages": "^3.0.2",
     "three": "^0.144.0"
